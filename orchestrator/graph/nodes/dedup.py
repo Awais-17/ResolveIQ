@@ -58,10 +58,8 @@ def _jaccard(a: set, b: set) -> float:
     return len(inter) / len(union) if union else 0.0
 
 
-_STUB_SIM_THRESHOLD = 0.10     # Bigram Jaccard — deliberately loose so
-                              # near-identical intents (different
-                              # phrasings) cluster offline. Real mode
-                              # uses Gemini embeddings at cosine 0.85.
+_STUB_SIM_THRESHOLD = 0.40     # Bigram Jaccard — threshold set to 0.40 to ensure
+                              # only strongly matching intents cluster offline.
 
 
 def _new_cluster_id(text: str) -> str:

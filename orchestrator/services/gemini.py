@@ -266,13 +266,14 @@ async def find_semantic_match(*, query: str, candidates: list[dict]) -> tuple[st
             return None, None
 
         prompt = (
-            "You are a semantic matching assistant. Your job is to determine if the new customer query "
-            "has the EXACT SAME intent or is asking the EXACT SAME question as any of the previous queries.\n\n"
+            "You are a strict semantic deduplication classifier.\n"
+            "Your job is to determine if the new customer query is asking for the EXACT SAME SPECIFIC item, issue, or intent as any previous query.\n\n"
             f"New Query: {query}\n\n"
             f"Previous Queries:\n{candidate_lines}\n\n"
-            "If the new query means the exact same thing as a previous query (e.g. 'where is ketchup' vs 'I can't find my ketchup'), "
-            "respond with the matching ID and its Answer. Otherwise, respond with null.\n"
-            "Respond ONLY as JSON matching: "
+            "STRICT RULES:\n"
+            "1. If the new query asks about a DIFFERENT menu item, product, error code, or topic (for example 'coke' vs 'vegan cheese', or 'upload 504' vs 'login error'), match_found MUST BE FALSE.\n"
+            "2. ONLY return match_found: true if the new query is semantically identical in intent to a previous query (e.g., 'where is ketchup' vs 'can't find ketchup').\n\n"
+            "Respond ONLY as JSON matching:\n"
             '{"match_found": boolean, "matched_cluster_id": string or null, "matched_answer": string or null}'
         )
 
