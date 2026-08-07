@@ -72,12 +72,13 @@ async def ground_and_answer(*, query: str, chunks: list[dict]) -> AnswerWithConf
             for i, c in enumerate(chunks)
         )
         prompt = (
-            "You are ResolveIQ — a precise enterprise support agent for CloudNest. "
-            "Answer the customer ticket DIRECTLY and STRICTLY using only the provided Knowledge Base context below. "
-            "Do NOT improvise, fabricate, elaborate, or add conversational fluff. "
-            "Give the exact answer specified in the context. "
-            "If the context does not contain sufficient details to answer the question, "
-            "set `confidence` to 0.0 and state that information is missing.\n\n"
+            "You are ResolveIQ — a precise enterprise support agent for CloudNest.\n"
+            "Answer the customer ticket DIRECTLY and STRICTLY using only the provided Knowledge Base context below.\n\n"
+            "CRITICAL PRODUCT & ENTITY MATCHING RULE:\n"
+            "Compare the specific item, product, menu option, or issue in the Customer Ticket against the Knowledge Base Context.\n"
+            "1. If the ticket asks about a DIFFERENT item or product than what is documented in the context (for example 'cheese burger' vs 'vegan cheese crust', 'coke' vs 'pepsi', or 'upload 504' vs 'login 404'), you MUST set `confidence` to 0.0 and `answer` to ''.\n"
+            "2. DO NOT treat a partial word match (like matching 'cheese' in 'cheese burger' with 'vegan cheese crust') as a valid answer if the specific product requested is different.\n"
+            "3. If the context contains the exact answer for the specific product/issue requested, set `confidence` to 0.95 and provide the direct answer.\n\n"
             f"Customer Ticket: {query}\n\n"
             f"Knowledge Base Context:\n{context_str}\n\n"
             "Respond ONLY as a valid JSON object matching the schema:\n"
@@ -93,15 +94,17 @@ async def ground_and_answer(*, query: str, chunks: list[dict]) -> AnswerWithConf
         )
         parsed = json.loads(resp.text)
         ans = (parsed.get("answer") or "").strip()
+        final_conf = float(parsed.get("confidence", 0.0))
 
-        # Guarantee: If Gemini returns a generic response or empty text, use the exact KB chunk body
-        if not ans or "generated successfully" in ans.lower() or "knowledge base" in ans.lower():
-            if best_body:
-                ans = best_body
+        if final_conf < 0.50 or not ans:
+            return AnswerWithConfidence(
+                answer="",
+                confidence=0.0,
+                cited_chunks=[],
+            )
 
-        final_conf = float(parsed.get("confidence", 0.95))
         return AnswerWithConfidence(
-            answer=ans or best_body or "Resolution found in knowledge base.",
+            answer=ans,
             confidence=min(max(final_conf, 0.0), 1.0),
             cited_chunks=parsed.get("cited_chunks") or [best_chunk.get("id")] if best_chunk.get("id") else [],
         )
