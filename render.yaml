@@ -14,6 +14,8 @@ services:
         sync: false
       - key: RESOLVEIQ_USE_STUB
         value: "0"
+      - key: FIREBASE_PROJECT_ID
+        value: resolveiq-demo
 
   - type: web
     name: resolveiq-dashboard
