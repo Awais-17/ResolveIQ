@@ -58,7 +58,52 @@ def _get_db():
     return _db
 
 
-# ─── Tickets ────────────────────────────────────────────────────────
+import json
+import os
+import httpx
+
+
+async def _write_ticket_via_rest(ticket_id: str, payload: dict[str, Any]) -> bool:
+    project_id = _settings.firebase_project or "resolveiq-demo"
+    api_key = (
+        os.getenv("FIREBASE_API_KEY")
+        or os.getenv("VITE_FIREBASE_API_KEY")
+        or "AIzaSyA1iE3TCa9cP9o10MCZW0r07rcYkjH8W7s"
+    )
+
+    fields = {}
+    mask_fields = []
+    for k, v in payload.items():
+        if v is None:
+            continue
+        mask_fields.append(k)
+        if isinstance(v, str):
+            fields[k] = {"stringValue": v}
+        elif isinstance(v, bool):
+            fields[k] = {"booleanValue": v}
+        elif isinstance(v, (int, float)):
+            fields[k] = {"doubleValue": float(v)}
+        elif isinstance(v, list):
+            fields[k] = {"arrayValue": {"values": [{"stringValue": str(x)} for x in v]}}
+        elif isinstance(v, dict):
+            fields[k] = {"stringValue": json.dumps(v)}
+
+    if not fields:
+        return True
+
+    query_params = "&".join([f"updateMask.fieldPaths={f}" for f in mask_fields])
+    url = f"https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents/tickets/{ticket_id}?key={api_key}&{query_params}"
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.patch(url, json={"fields": fields})
+            if resp.is_success:
+                log.info("firestore.rest_write_success", ticket_id=ticket_id)
+                return True
+            log.warning("firestore.rest_write_status", ticket_id=ticket_id, status=resp.status_code, text=resp.text[:200])
+    except Exception as exc:
+        log.warning("firestore.rest_write_exception", ticket_id=ticket_id, error=str(exc))
+    return False
 
 
 async def write_ticket(ticket_id: str, payload: dict[str, Any]) -> None:
@@ -66,11 +111,12 @@ async def write_ticket(ticket_id: str, payload: dict[str, Any]) -> None:
     try:
         db = _get_db()
         ref = db.collection("tickets").document(ticket_id)
-        payload = {**payload, "updatedAt": firestore.SERVER_TIMESTAMP}
-        await ref.set(payload, merge=True)
+        payload_with_ts = {**payload, "updatedAt": firestore.SERVER_TIMESTAMP}
+        await ref.set(payload_with_ts, merge=True)
         log.info("firestore.ticket_written", ticket_id=ticket_id, keys=list(payload.keys()))
     except Exception as exc:
-        log.warning("firestore.ticket_write_failed", ticket_id=ticket_id, error=str(exc))
+        log.warning("firestore.admin_sdk_failed_trying_rest", ticket_id=ticket_id, error=str(exc))
+        await _write_ticket_via_rest(ticket_id, payload)
 
 
 async def get_ticket(ticket_id: str) -> dict[str, Any] | None:

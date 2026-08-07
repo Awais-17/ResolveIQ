@@ -16,6 +16,8 @@ services:
         value: "0"
       - key: FIREBASE_PROJECT_ID
         value: resolveiq-demo
+      - key: FIREBASE_API_KEY
+        value: AIzaSyA1iE3TCa9cP9o10MCZW0r07rcYkjH8W7s
 
   - type: web
     name: resolveiq-dashboard
