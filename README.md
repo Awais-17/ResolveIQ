@@ -236,6 +236,7 @@ To run the complete automated graph verification suite:
 ---
 
 ## 📂 Project Structure
+<img width="7016" height="4056" alt="architecture-a2-1786121412107" src="https://github.com/user-attachments/assets/3dee3b98-730a-475c-9fdc-46965e0342c3" />
 
 ```text
 GrandFinale/
