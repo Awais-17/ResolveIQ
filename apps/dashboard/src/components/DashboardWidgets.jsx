@@ -2,18 +2,18 @@ import { useTickets, useEscalations, useAccuracyTrend } from "../hooks/useRealti
 import { useState } from "react";
 
 const CHANNEL_META = {
-  chat:  { chip: "bg-sky-500/20 text-sky-300",  label: "Chat"  },
-  email: { chip: "bg-violet-500/20 text-violet-300", label: "Email" },
-  slack: { chip: "bg-amber-500/20 text-amber-300",  label: "Slack" },
-  portal:{ chip: "bg-emerald-500/20 text-emerald-300", label: "Portal" },
+  chat:   { chip: "bg-sky-50 text-sky-700 border border-sky-200/80 font-medium",    label: "Chat"   },
+  email:  { chip: "bg-violet-50 text-violet-700 border border-violet-200/80 font-medium", label: "Email"  },
+  slack:  { chip: "bg-amber-50 text-amber-700 border border-amber-200/80 font-medium",  label: "Slack"  },
+  portal: { chip: "bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-medium", label: "Portal" },
 };
 
 const STATUS_META = {
-  auto_resolved:       { chip: "bg-ok-500/20 text-ok-500",   label: "Auto-resolved", icon: "✓" },
-  escalated:           { chip: "bg-warn-500/20 text-warn-500", label: "Escalated", icon: "⬆" },
-  incident_flagged:    { chip: "bg-crit-500/20 text-crit-500", label: "Incident", icon: "🚨" },
-  pending:             { chip: "bg-slate-500/20 text-slate-300 animate-pulse-pending", label: "Pending", icon: "⏳" },
-  human_resolved:      { chip: "bg-emerald-700/20 text-emerald-300", label: "Human-resolved", icon: "👤" },
+  auto_resolved:    { chip: "bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-medium", label: "Auto-resolved", icon: "✓" },
+  escalated:        { chip: "bg-amber-50 text-amber-700 border border-amber-200/80 font-medium",   label: "Escalated", icon: "⬆" },
+  incident_flagged: { chip: "bg-rose-50 text-rose-700 border border-rose-200/80 font-medium",     label: "Incident", icon: "🚨" },
+  pending:          { chip: "bg-slate-100 text-slate-600 border border-slate-200/80 font-medium animate-pulse-pending", label: "Pending", icon: "⏳" },
+  human_resolved:   { chip: "bg-teal-50 text-teal-700 border border-teal-200/80 font-medium",       label: "Human-resolved", icon: "👤" },
 };
 
 const CHANNELS = ["chat", "email", "slack", "portal"];
@@ -52,34 +52,47 @@ export function StatsBar() {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-      <StatCard label="Resolve rate"     value={pct(resolveRate)}  tone="ok"      icon="🎯" />
-      <StatCard label="Auto resolved"    value={autoResolved}      tone="brand"   icon="🤖" />
-      <StatCard label="Escalations"      value={escalations.length} tone="warn"   icon="⬆️" />
-      <StatCard label="Active incidents" value={incidentsActive}   tone="crit"    icon="🚨" />
-      <StatCard label="Agent-hours saved" value={hoursSaved}       tone="emerald" icon="⏱️" />
-      <StatCard label="System accuracy"  value={pct(stat.accuracy)} tone={stat.accuracy >= 0.85 ? "ok" : "warn"} icon="📊" />
-      <StatCard label="Feedback samples" value={stat.total || 0}   tone="slate"   icon="📝" />
+      <StatCard label="Resolve rate"      value={pct(resolveRate)}   tone="emerald" icon="🎯" grade="A+" />
+      <StatCard label="Auto resolved"     value={autoResolved}       tone="blue"    icon="🤖" grade="A" />
+      <StatCard label="Escalations"       value={escalations.length} tone="amber"   icon="⬆️" grade="B" />
+      <StatCard label="Active incidents"  value={incidentsActive}    tone="rose"    icon="🚨" grade={incidentsActive > 0 ? "F" : "A+"} />
+      <StatCard label="Hours saved"       value={`${hoursSaved}h`}   tone="emerald" icon="⏱️" grade="A+" />
+      <StatCard label="System accuracy"   value={pct(stat.accuracy)} tone={stat.accuracy >= 0.85 ? "emerald" : "amber"} icon="📊" grade={stat.accuracy >= 0.85 ? "A" : "C"} />
+      <StatCard label="Feedback count"   value={stat.total || 0}    tone="slate"   icon="📝" grade="A" />
     </div>
   );
 }
 
-function StatCard({ label, value, tone = "slate", icon }) {
+function StatCard({ label, value, tone = "slate", icon, grade }) {
   const tones = {
-    ok:      "text-ok-500    border-ok-500/20    from-ok-500/5",
-    warn:    "text-warn-500  border-warn-500/20  from-warn-500/5",
-    crit:    "text-crit-500  border-crit-500/20  from-crit-500/5",
-    brand:   "text-brand-500 border-brand-500/20 from-brand-500/5",
-    emerald: "text-emerald-400 border-emerald-500/20 from-emerald-500/5",
-    slate:   "text-slate-200 border-slate-700    from-slate-500/5",
+    emerald: "bg-emerald-50/60 border-emerald-200/70 text-emerald-800",
+    amber:   "bg-amber-50/60 border-amber-200/70 text-amber-800",
+    rose:    "bg-rose-50/60 border-rose-200/70 text-rose-800",
+    blue:    "bg-blue-50/60 border-blue-200/70 text-blue-800",
+    slate:   "bg-slate-50/60 border-slate-200/70 text-slate-800",
   };
-  const cls = tones[tone] || tones.slate;
+  const gradeStyles = {
+    "A+": "bg-emerald-100 text-emerald-700 border-emerald-200",
+    "A":  "bg-blue-100 text-blue-700 border-blue-200",
+    "B":  "bg-indigo-100 text-indigo-700 border-indigo-200",
+    "C":  "bg-amber-100 text-amber-700 border-amber-200",
+    "F":  "bg-rose-100 text-rose-700 border-rose-200",
+  };
+
   return (
-    <div className={`bg-gradient-to-br ${cls} to-transparent border rounded-xl p-4 transition-all hover:scale-[1.02]`}>
-      <div className="flex items-center gap-1.5">
-        <span className="text-sm">{icon}</span>
-        <span className="text-[10px] uppercase tracking-wider text-slate-400">{label}</span>
+    <div className={`bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all hover:scale-[1.01]`}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm">{icon}</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</span>
+        </div>
+        {grade && (
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md border ${gradeStyles[grade] || gradeStyles["A"]}`}>
+            {grade}
+          </span>
+        )}
       </div>
-      <div className={`mt-1 text-2xl font-semibold ${cls.split(' ')[0]}`}>{value}</div>
+      <div className="mt-2 text-2xl font-extrabold tracking-tight text-slate-800">{value}</div>
     </div>
   );
 }
@@ -92,17 +105,18 @@ export function ChannelBreakdown() {
   });
 
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-      <div className="text-xs uppercase tracking-wider text-slate-400 mb-3">
-        Tickets by channel (last 500)
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
+      <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+        <span>Tickets by Channel (Last 500)</span>
+        <span className="text-[11px] text-slate-400 font-normal">Real-time telemetry</span>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         {CHANNELS.map((c) => (
-          <div key={c} className="flex items-center gap-2 bg-slate-950/60 px-3 py-1.5 rounded-lg">
-            <span className={`text-[10px] px-2 py-0.5 rounded-full ${CHANNEL_META[c].chip}`}>
+          <div key={c} className="flex items-center gap-3 bg-slate-50 border border-slate-200/60 px-4 py-2 rounded-xl">
+            <span className={`text-xs px-2.5 py-0.5 rounded-full ${CHANNEL_META[c].chip}`}>
               {CHANNEL_META[c].label}
             </span>
-            <span className="font-mono text-lg">{counts[c]}</span>
+            <span className="font-mono text-lg font-bold text-slate-800">{counts[c]}</span>
           </div>
         ))}
       </div>
@@ -115,31 +129,36 @@ export function TicketTable() {
   const [expandedId, setExpandedId] = useState(null);
 
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-        <span className="text-xs uppercase tracking-wider text-slate-400">
-          Live Ticket Stream (click any row to view AI answer)
+    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+      <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping" />
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+            Live Ticket Stream (Click row to view AI analysis)
+          </span>
+        </div>
+        <span className="text-xs text-slate-500 font-mono bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-medium">
+          {items.length} tickets ingested
         </span>
-        <span className="text-xs text-slate-500 font-mono">{items.length} tickets</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="text-slate-400 bg-slate-950/40">
+          <thead className="text-slate-500 bg-slate-50/80 border-b border-slate-100 text-xs font-semibold uppercase tracking-wider">
             <tr>
-              <th className="text-left font-medium px-3 py-2">When</th>
-              <th className="text-left font-medium px-3 py-2">Channel</th>
-              <th className="text-left font-medium px-3 py-2">User</th>
-              <th className="text-left font-medium px-3 py-2">Text</th>
-              <th className="text-left font-medium px-3 py-2">Status</th>
-              <th className="text-right font-medium px-3 py-2">Confidence</th>
-              <th className="text-left font-medium px-3 py-2">Cluster</th>
+              <th className="text-left px-4 py-3">When</th>
+              <th className="text-left px-4 py-3">Channel</th>
+              <th className="text-left px-4 py-3">User</th>
+              <th className="text-left px-4 py-3">Text</th>
+              <th className="text-left px-4 py-3">Status</th>
+              <th className="text-right px-4 py-3">Confidence</th>
+              <th className="text-left px-4 py-3">Cluster</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-100">
             {items.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-3 py-6 text-center text-slate-500">
-                  Waiting for tickets…
+                <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
+                  Waiting for incoming tickets…
                 </td>
               </tr>
             )}
@@ -148,52 +167,60 @@ export function TicketTable() {
                 <tr
                   key={t.id}
                   onClick={() => setExpandedId(expandedId === t.id ? null : t.id)}
-                  className={`border-t border-slate-800/70 hover:bg-slate-800/40 cursor-pointer transition-colors ${idx === 0 ? "animate-fade-in" : ""}`}
+                  className={`hover:bg-slate-50/80 cursor-pointer transition-colors ${idx === 0 ? "animate-fade-in" : ""}`}
                 >
-                  <td className="px-3 py-2 text-slate-400 text-xs whitespace-nowrap">
+                  <td className="px-4 py-3 text-slate-500 text-xs font-medium whitespace-nowrap">
                     {timeAgo(toEpoch(t.createdAt))}
                   </td>
-                  <td className="px-3 py-2">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${CHANNEL_META[t.channel]?.chip || "bg-slate-700 text-slate-300"}`}>
+                  <td className="px-4 py-3">
+                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full ${CHANNEL_META[t.channel]?.chip || "bg-slate-100 text-slate-600"}`}>
                       {CHANNEL_META[t.channel]?.label || t.channel}
                     </span>
                   </td>
-                  <td className="px-3 py-2 font-mono text-xs text-slate-400">{t.user_id}</td>
-                  <td className="px-3 py-2 max-w-md truncate font-medium text-slate-200" title={t.text}>{t.text}</td>
-                  <td className="px-3 py-2">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${STATUS_META[t.status]?.chip || "bg-slate-700 text-slate-300"}`}>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-500">{t.user_id}</td>
+                  <td className="px-4 py-3 max-w-md truncate font-medium text-slate-800" title={t.text}>{t.text}</td>
+                  <td className="px-4 py-3">
+                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1.5 ${STATUS_META[t.status]?.chip || "bg-slate-100 text-slate-600"}`}>
                       <span>{STATUS_META[t.status]?.icon || ""}</span>
                       {STATUS_META[t.status]?.label || t.status}
                     </span>
                   </td>
-                  <td className="px-3 py-2 text-right font-mono">
+                  <td className="px-4 py-3 text-right font-mono font-semibold">
                     {t.confidence_score !== undefined && t.confidence_score !== null ? (
-                      <span className={t.confidence_score >= 0.7 ? "text-ok-500" : t.confidence_score >= 0.4 ? "text-warn-500" : "text-crit-500"}>
+                      <span className={`px-2 py-0.5 rounded-md text-xs border ${
+                        t.confidence_score >= 0.7 
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                          : t.confidence_score >= 0.4 
+                          ? "bg-amber-50 text-amber-700 border-amber-200" 
+                          : "bg-rose-50 text-rose-700 border-rose-200"
+                      }`}>
                         {pct(t.confidence_score)}
                       </span>
                     ) : (
-                      <span className="text-slate-600">—</span>
+                      <span className="text-slate-400">—</span>
                     )}
                   </td>
-                  <td className="px-3 py-2 font-mono text-xs text-slate-500">
+                  <td className="px-4 py-3 font-mono text-xs text-slate-400">
                     {t.cluster_id || "—"}
                   </td>
                 </tr>
 
                 {/* Expanded Answer Row */}
                 {expandedId === t.id && (
-                  <tr key={`${t.id}-exp`} className="bg-slate-950/80 border-t border-slate-800/40">
-                    <td colSpan={7} className="p-4">
-                      <div className="space-y-2 text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="text-brand-400 font-semibold uppercase tracking-wider">🤖 Gemini AI Generated Answer:</span>
+                  <tr key={`${t.id}-exp`} className="bg-slate-50/90">
+                    <td colSpan={7} className="p-5">
+                      <div className="space-y-3 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-blue-700 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                            <span>🤖</span> Gemini AI Grounded Answer
+                          </span>
                           {t.matched_kb_ids && t.matched_kb_ids.length > 0 && (
-                            <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
-                              Cited: {t.matched_kb_ids.join(", ")}
+                            <span className="text-[11px] bg-white border border-slate-200 text-slate-600 px-2.5 py-0.5 rounded-md font-medium shadow-2xs">
+                              Cited Sources: {t.matched_kb_ids.join(", ")}
                             </span>
                           )}
                         </div>
-                        <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 text-slate-300 font-sans leading-relaxed whitespace-pre-wrap">
+                        <div className="bg-white border border-slate-200/80 rounded-xl p-4 text-slate-700 font-sans leading-relaxed whitespace-pre-wrap shadow-xs">
                           {t.answer || t.drafted_reply || "No answer generated yet."}
                         </div>
                       </div>
@@ -213,12 +240,12 @@ export function AccuracySpark() {
   const { samples = [] } = useAccuracyTrend().stat || {};
   if (samples.length === 0) {
     return (
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-        <div className="text-xs uppercase tracking-wider text-slate-400 mb-2">
-          Accuracy trend (rolling)
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
+        <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+          Accuracy Trend (Rolling)
         </div>
-        <div className="text-slate-500 text-sm h-24 flex items-center justify-center">
-          Awaiting feedback…
+        <div className="text-slate-400 text-sm h-24 flex items-center justify-center">
+          Awaiting feedback telemetry…
         </div>
       </div>
     );
@@ -234,21 +261,21 @@ export function AccuracySpark() {
   });
   const pts = running.map((v, i) => `${(i / (n - 1)) * w},${h - v * h}`).join(" ");
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-      <div className="text-xs uppercase tracking-wider text-slate-400 mb-2">
-        Accuracy trend (rolling)
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
+      <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+        Accuracy Trend (Rolling)
       </div>
-      <svg width={w} height={h} className="block">
+      <svg width={w} height={h} className="block w-full">
         <defs>
           <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
           </linearGradient>
         </defs>
-        <polyline points={pts} fill="none" stroke="#22c55e" strokeWidth="2" />
-        <line x1="0" y1={h - 0.7 * h} x2={w} y2={h - 0.7 * h} stroke="#475569" strokeDasharray="3 3" />
+        <polyline points={pts} fill="none" stroke="#10b981" strokeWidth="2.5" />
+        <line x1="0" y1={h - 0.7 * h} x2={w} y2={h - 0.7 * h} stroke="#cbd5e1" strokeDasharray="3 3" />
       </svg>
-      <div className="text-xs text-slate-500 mt-1">last {n} samples — target ≥ 85%</div>
+      <div className="text-xs text-slate-500 mt-2 font-medium">Last {n} samples — Target SLA ≥ 85%</div>
     </div>
   );
 }

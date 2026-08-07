@@ -14,8 +14,9 @@ export function IncidentCard() {
   const { items } = useIncidents();
   if (items.length === 0) {
     return (
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 text-slate-500 text-sm flex items-center gap-2">
-        <span className="text-lg">🎉</span> No active incidents
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 text-slate-600 text-sm flex items-center gap-3 shadow-sm">
+        <span className="text-xl">🎉</span>
+        <span className="font-medium">No active incidents · All services operational</span>
       </div>
     );
   }
@@ -24,25 +25,25 @@ export function IncidentCard() {
       {items.map((ic) => (
         <div
           key={ic.id}
-          className="bg-crit-500/10 border border-crit-500/30 rounded-xl p-4 animate-pulse-glow animate-fade-in"
+          className="bg-rose-50/80 border border-rose-200 rounded-2xl p-5 shadow-sm animate-pulse-glow animate-fade-in"
         >
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-crit-500 font-semibold">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-rose-700 font-bold">
                 <span className="text-base">🚨</span>
-                Active Incident · {ic.ticket_count || 0} tickets
+                Active Incident · {ic.ticket_count || 0} tickets correlated
               </div>
-              <div className="mt-1 text-slate-200">{ic.summary || "Cluster detected"}</div>
-              <div className="mt-2 text-xs text-slate-400">
-                First seen: {timeOf(ic.first_seen)}
+              <div className="mt-1.5 text-slate-800 font-medium">{ic.summary || "Cluster detected"}</div>
+              <div className="mt-2 text-xs text-slate-500">
+                First detected: {timeOf(ic.first_seen)}
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="text-xs text-slate-400">Root cause</div>
-              <div className="text-sm text-crit-500 font-medium mt-0.5">
+              <div className="text-xs text-slate-500 font-medium">Suspected Root Cause</div>
+              <div className="text-sm text-rose-700 font-bold mt-0.5">
                 {ic.suspected_root_cause || "Investigating…"}
               </div>
-              <div className="text-xs text-slate-500 mt-1">
+              <div className="text-xs mt-1.5 font-medium">
                 <ConfidenceBadge value={ic.root_cause_confidence} />
               </div>
             </div>
@@ -55,10 +56,14 @@ export function IncidentCard() {
 
 function ConfidenceBadge({ value }) {
   const v = value || 0;
-  const label = v >= 0.7 ? "high" : v >= 0.4 ? "medium" : "low";
-  const color = v >= 0.7 ? "text-ok-500" : v >= 0.4 ? "text-warn-500" : "text-slate-400";
+  const label = v >= 0.7 ? "High" : v >= 0.4 ? "Medium" : "Low";
+  const badgeClass = v >= 0.7 
+    ? "bg-emerald-100 text-emerald-700 border-emerald-200" 
+    : v >= 0.4 
+    ? "bg-amber-100 text-amber-700 border-amber-200" 
+    : "bg-rose-100 text-rose-700 border-rose-200";
   return (
-    <span className={color}>
+    <span className={`text-[11px] px-2 py-0.5 rounded-md font-semibold border ${badgeClass}`}>
       {label} confidence ({Math.round(v * 100)}%)
     </span>
   );
@@ -67,34 +72,34 @@ function ConfidenceBadge({ value }) {
 export function KBList() {
   const { items } = useKBArticles();
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-400">
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
           <span className="text-sm">📚</span>
-          Knowledge Base · {items.length} articles
+          Knowledge Base · {items.length} Articles
         </div>
         {items.length > 0 && (
-          <div className="text-[10px] px-2 py-0.5 rounded-full bg-ok-700/20 text-emerald-300 animate-fade-in">
-            +{items.filter((a) => a.source_ticket_id).length} self-learned
+          <div className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 animate-fade-in">
+            +{items.filter((a) => a.source_ticket_id).length} Self-learned
           </div>
         )}
       </div>
-      <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+      <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
         {items.length === 0 && (
-          <div className="text-slate-500 text-sm">No KB articles yet.</div>
+          <div className="text-slate-400 text-sm">No KB articles indexed yet.</div>
         )}
         {items.map((a) => (
-          <div key={a.id} className="border border-slate-800 rounded-lg p-3 text-sm hover:border-slate-700 transition-colors animate-fade-in">
-            <div className="font-medium text-slate-100 truncate">{a.title}</div>
-            <div className="text-xs text-slate-400 line-clamp-2 mt-1">{a.summary || a.body}</div>
-            <div className="mt-2 flex gap-1 flex-wrap">
+          <div key={a.id} className="border border-slate-200/60 bg-slate-50/50 rounded-xl p-3.5 text-sm hover:border-slate-300 transition-colors animate-fade-in">
+            <div className="font-semibold text-slate-800 truncate">{a.title}</div>
+            <div className="text-xs text-slate-500 line-clamp-2 mt-1">{a.summary || a.body}</div>
+            <div className="mt-2.5 flex gap-1.5 flex-wrap">
               {(a.tags || []).map((t) => (
-                <span key={t} className="text-[10px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded">
+                <span key={t} className="text-[10px] font-medium px-2 py-0.5 bg-white border border-slate-200 text-slate-600 rounded-md">
                   {t}
                 </span>
               ))}
               {a.source_ticket_id && (
-                <span className="text-[10px] px-1.5 py-0.5 bg-brand-700/20 text-brand-500 rounded">
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md">
                   🧠 self-learned
                 </span>
               )}
@@ -133,7 +138,7 @@ export function EscalationQueue({ onResolve }) {
       onResolve?.(ticketId, data);
       setResolving(null);
       setResolutionText("");
-      setSuccess(`Resolved! New KB article: ${data.kb_article_id || "generated"}`);
+      setSuccess(`Resolved! New KB article generated: ${data.kb_article_id || "indexed"}`);
       setTimeout(() => setSuccess(null), 5000);
     } catch (err) {
       setError(err.message);
@@ -143,34 +148,34 @@ export function EscalationQueue({ onResolve }) {
   };
 
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-400 mb-3">
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-4">
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
         <span className="text-sm">⬆️</span>
-        Escalation Queue · {items.length} pending human review
+        Escalation Queue · {items.length} Pending Human Review
       </div>
 
       {success && (
-        <div className="mb-3 bg-ok-500/10 border border-ok-500/30 rounded-lg p-3 text-xs text-ok-400 animate-fade-in">
+        <div className="mb-3 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 font-medium animate-fade-in">
           ✓ {success}
         </div>
       )}
 
       <div className="space-y-3">
         {items.length === 0 && (
-          <div className="text-slate-500 text-sm flex items-center gap-2">
-            <span>🤖</span> No escalated tickets. Agent is handling everything.
+          <div className="text-slate-400 text-sm flex items-center gap-2 py-4 justify-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            <span>🤖</span> No escalated tickets. AI Agent is handling all traffic!
           </div>
         )}
         {items.map((t) => (
-          <div key={t.id} className="border border-slate-800 rounded-lg p-4 hover:border-slate-700 transition-colors animate-slide-in-right">
+          <div key={t.id} className="border border-slate-200/80 bg-slate-50/40 rounded-xl p-4 hover:border-slate-300 transition-colors animate-slide-in-right">
             <div className="flex justify-between items-start gap-3">
               <div className="flex-1 min-w-0">
-                <div className="font-mono text-xs text-slate-500">#{t.id}</div>
-                <div className="text-sm text-slate-100 mt-1">{t.text}</div>
+                <div className="font-mono text-xs text-slate-400 font-medium">#{t.id}</div>
+                <div className="text-sm font-semibold text-slate-800 mt-1">{t.text}</div>
               </div>
               <div className="text-right text-xs shrink-0">
-                <div className="text-slate-400">Confidence</div>
-                <div className="font-mono text-warn-500">
+                <div className="text-slate-400 font-medium">Confidence</div>
+                <div className="font-mono text-amber-600 font-bold">
                   {t.confidence_score !== null && t.confidence_score !== undefined
                     ? `${Math.round((t.confidence_score || 0) * 100)}%`
                     : "—"}
@@ -179,11 +184,11 @@ export function EscalationQueue({ onResolve }) {
             </div>
 
             {t.drafted_reply && (
-              <div className="mt-3 bg-slate-950/60 border border-slate-800 rounded-lg p-3 text-xs">
-                <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-1 flex items-center gap-1">
-                  <span>🤖</span> AI Draft reply (editable before send)
+              <div className="mt-3 bg-white border border-slate-200 rounded-xl p-3.5 text-xs shadow-2xs">
+                <div className="text-[10px] uppercase tracking-wider text-blue-600 font-bold mb-1 flex items-center gap-1.5">
+                  <span>🤖</span> AI Drafted Reply (editable before send)
                 </div>
-                <pre className="whitespace-pre-wrap font-sans text-slate-300">
+                <pre className="whitespace-pre-wrap font-sans text-slate-700 leading-relaxed">
                   {t.drafted_reply}
                 </pre>
               </div>
@@ -191,41 +196,41 @@ export function EscalationQueue({ onResolve }) {
 
             {t.human_context_bundle && (
               <details className="mt-2 text-xs">
-                <summary className="cursor-pointer text-slate-400 hover:text-slate-200 transition-colors">
+                <summary className="cursor-pointer text-slate-500 hover:text-slate-700 transition-colors font-medium">
                   📎 Context bundle ({t.human_context_bundle?.retrieved_chunks?.length || 0} KB chunks)
                 </summary>
-                <pre className="mt-2 bg-slate-950/60 p-2 rounded overflow-x-auto text-slate-400">
+                <pre className="mt-2 bg-slate-100 p-3 rounded-lg overflow-x-auto text-slate-600 border border-slate-200 font-mono text-[11px]">
                   {JSON.stringify(t.human_context_bundle, null, 2)}
                 </pre>
               </details>
             )}
 
             {resolving === t.id ? (
-              <div className="mt-3 space-y-2">
+              <div className="mt-3 space-y-2.5">
                 <textarea
                   rows={3}
-                  placeholder="How did you resolve this? (will be summarized into a KB article)"
+                  placeholder="Type resolution here… (will be automatically summarized into a self-learned KB article)"
                   value={resolutionText}
                   onChange={(e) => setResolutionText(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:border-brand-500 focus:outline-none transition-colors"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all shadow-2xs"
                 />
-                {error && <div className="text-xs text-crit-500">✗ {error}</div>}
+                {error && <div className="text-xs text-rose-600 font-medium">✗ {error}</div>}
                 <div className="flex gap-2">
                   <button
                     disabled={submitting || !resolutionText.trim()}
                     onClick={() => submit(t.id)}
-                    className="bg-ok-700 hover:bg-ok-600 disabled:opacity-50 text-white text-xs px-4 py-2 rounded-lg transition-all flex items-center gap-2"
+                    className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-2"
                   >
                     {submitting ? (
                       <>
-                        <span className="inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Resolving…
+                        <span className="inline-block w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Summarizing & Resolving…
                       </>
                     ) : "✓ Resolve & learn"}
                   </button>
                   <button
                     onClick={() => { setResolving(null); setResolutionText(""); setError(null); }}
-                    className="text-slate-400 hover:text-slate-200 text-xs px-2 transition-colors"
+                    className="text-slate-500 hover:text-slate-800 font-medium text-xs px-3 transition-colors"
                   >
                     Cancel
                   </button>
@@ -234,9 +239,9 @@ export function EscalationQueue({ onResolve }) {
             ) : (
               <button
                 onClick={() => { setResolving(t.id); setResolutionText(""); }}
-                className="mt-3 text-xs bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition-all hover:scale-[1.02]"
+                className="mt-3 text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl transition-all shadow-xs hover:scale-[1.01]"
               >
-                🧠 Resolve + add to KB
+                🧠 Resolve + Add to KB
               </button>
             )}
           </div>
