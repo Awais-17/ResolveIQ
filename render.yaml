@@ -20,10 +20,40 @@ services:
     env: static
     buildCommand: cd apps/dashboard && npm install && npm run build
     staticPublishPath: apps/dashboard/dist
+    envVars:
+      - key: VITE_ORCHESTRATOR_URL
+        value: https://resolveiq-orchestrator.onrender.com
+      - key: VITE_FIREBASE_API_KEY
+        value: AIzaSyA1iE3TCa9cP9o10MCZW0r07rcYkjH8W7s
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        value: resolveiq-demo.firebaseapp.com
+      - key: VITE_FIREBASE_PROJECT_ID
+        value: resolveiq-demo
+      - key: VITE_FIREBASE_STORAGE_BUCKET
+        value: resolveiq-demo.firebasestorage.app
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        value: 850610929101
+      - key: VITE_FIREBASE_APP_ID
+        value: "1:850610929101:web:1cb9f48ef06910e7e81884"
 
   - type: web
     name: resolveiq-customer-portal
     env: static
     buildCommand: cd apps/customer-portal && npm install && npm run build
     staticPublishPath: apps/customer-portal/dist
+    envVars:
+      - key: VITE_ORCHESTRATOR_URL
+        value: https://resolveiq-orchestrator.onrender.com
+      - key: VITE_FIREBASE_API_KEY
+        value: AIzaSyA1iE3TCa9cP9o10MCZW0r07rcYkjH8W7s
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        value: resolveiq-demo.firebaseapp.com
+      - key: VITE_FIREBASE_PROJECT_ID
+        value: resolveiq-demo
+      - key: VITE_FIREBASE_STORAGE_BUCKET
+        value: resolveiq-demo.firebasestorage.app
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        value: 850610929101
+      - key: VITE_FIREBASE_APP_ID
+        value: "1:850610929101:web:1cb9f48ef06910e7e81884"
 
