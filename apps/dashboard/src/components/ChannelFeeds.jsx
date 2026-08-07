@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ORCHESTRATOR_URL, db } from "../firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, updateDoc, doc } from "firebase/firestore";
 
 const CHANNELS = [
   { id: "chat",  label: "Live Chat",  icon: "💬", placeholder: "Hi, I'm getting a 504 on uploads…" },
@@ -55,6 +55,19 @@ export default function ChannelFeeds() {
       if (!resp.ok) throw new Error(`Orchestrator returned HTTP ${resp.status}`);
       const data = await resp.json();
       setLastResult(data);
+
+      try {
+        await updateDoc(doc(db, "tickets", docRef.id), {
+          status: data.status || "escalated",
+          answer: data.answer || "",
+          confidence_score: data.confidence ?? 0,
+          drafted_reply: data.drafted_reply || "",
+          human_context_bundle: data.human_context_bundle || null,
+          updatedAt: serverTimestamp(),
+        });
+      } catch (e) {
+        console.error("Failed to update ticket in Firestore:", e);
+      }
     } catch (err) {
       setError(err.message);
     } finally {

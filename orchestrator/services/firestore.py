@@ -63,11 +63,14 @@ def _get_db():
 
 async def write_ticket(ticket_id: str, payload: dict[str, Any]) -> None:
     """Merge UPSERT a ticket doc by id into `tickets/{ticket_id}`."""
-    db = _get_db()
-    ref = db.collection("tickets").document(ticket_id)
-    payload = {**payload, "updatedAt": firestore.SERVER_TIMESTAMP}
-    await ref.set(payload, merge=True)
-    log.info("firestore.ticket_written", ticket_id=ticket_id, keys=list(payload.keys()))
+    try:
+        db = _get_db()
+        ref = db.collection("tickets").document(ticket_id)
+        payload = {**payload, "updatedAt": firestore.SERVER_TIMESTAMP}
+        await ref.set(payload, merge=True)
+        log.info("firestore.ticket_written", ticket_id=ticket_id, keys=list(payload.keys()))
+    except Exception as exc:
+        log.warning("firestore.ticket_write_failed", ticket_id=ticket_id, error=str(exc))
 
 
 async def get_ticket(ticket_id: str) -> dict[str, Any] | None:

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { db, ORCHESTRATOR_URL } from "./firebase";
-import { collection, addDoc, serverTimestamp, doc, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, onSnapshot, updateDoc } from "firebase/firestore";
 
 const QUICK_PROMPTS = [
   { label: "🍕 Sunday Hours", text: "What are your opening hours on Sunday?" },
@@ -148,6 +148,19 @@ export default function App() {
       if (resp.ok) {
         const resultData = await resp.json();
         updateMessageFromData(ticketId, resultData);
+
+        try {
+          await updateDoc(doc(db, "tickets", ticketId), {
+            status: resultData.status || "escalated",
+            answer: resultData.answer || "",
+            confidence_score: resultData.confidence ?? 0,
+            drafted_reply: resultData.drafted_reply || "",
+            human_context_bundle: resultData.human_context_bundle || null,
+            updatedAt: serverTimestamp(),
+          });
+        } catch (e) {
+          console.error("Failed to update ticket in Firestore:", e);
+        }
       }
     } catch (err) {
       console.error("Error sending question:", err);
