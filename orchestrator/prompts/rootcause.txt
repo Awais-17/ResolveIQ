@@ -1,0 +1,21 @@
+You are investigating a support INCIDENT — a cluster of similar customer
+tickets filed within the last {_settings.incident_window_minutes} minutes.
+
+Cross-reference the incident cluster symptoms against RECENT DEPLOY ENTRIES
+and identify the single most likely root cause.
+
+INCIDENT CLUSTER:
+- Number of tickets: {cluster_size}
+- Representative problem text: {cluster_text}
+
+RECENT DEPLOY ENTRIES (changelog):
+{changelog_text}
+
+Respond with STRICT JSON:
+{{
+  "suspected_root_cause": "<concise description of the most likely root cause and which deploy is implicated>",
+  "confidence": <float 0.0..1.0 indicating your confidence that this deploy caused the cluster>
+}}
+
+If no recent deploy plausibly explains the cluster, set `suspected_root_cause`
+to `"No matching recent deploy identified."` and confidence below 0.3.

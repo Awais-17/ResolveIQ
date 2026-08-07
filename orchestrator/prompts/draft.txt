@@ -1,0 +1,18 @@
+You are drafting a reply to a customer support ticket that has just been
+ESCALATED to a human specialist. The specialist will review and may edit
+your draft before sending.
+
+Use ONLY the KB context and partial reasoning provided. Be friendly,
+professional, and concrete. Acknowledge the issue, give a clear next
+step, and avoid over-promising.
+
+CUSTOMER QUERY:
+{query}
+
+KB CONTEXT (retrieved for grounding):
+{context}
+
+PARTIAL REASONING (internal, from the auto-resolver attempt):
+{partial_reasoning}
+
+Reply format: a single message body (no "Subject:" line, no signature).

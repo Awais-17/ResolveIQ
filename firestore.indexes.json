@@ -1,0 +1,12 @@
+{
+  "indexes": [
+    { "collectionGroup": "tickets", "queryScope": "COLLECTION", "fields": [{"fieldPath": "cluster_id", "order": "ASCENDING"}, {"fieldPath": "createdAt", "order": "DESCENDING"}] },
+    { "collectionGroup": "tickets", "queryScope": "COLLECTION", "fields": [{"fieldPath": "status", "order": "ASCENDING"}, {"fieldPath": "createdAt", "order": "DESCENDING"}] },
+    { "collectionGroup": "tickets", "queryScope": "COLLECTION", "fields": [{"fieldPath": "channel", "order": "ASCENDING"}, {"fieldPath": "createdAt", "order": "DESCENDING"}] },
+    { "collectionGroup": "incident_clusters", "queryScope": "COLLECTION", "fields": [{"fieldPath": "status", "order": "ASCENDING"}, {"fieldPath": "first_seen", "order": "DESCENDING"}] },
+    { "collectionGroup": "feedback", "queryScope": "COLLECTION", "fields": [{"fieldPath": "ticket_id", "order": "ASCENDING"}, {"fieldPath": "confidence_at_time", "order": "ASCENDING"}] }
+  ],
+  "fieldOverrides": [
+    { "collectionGroup": "tickets", "fieldPath": "embedding", "indexes": [], "ttl": false }
+  ]
+}

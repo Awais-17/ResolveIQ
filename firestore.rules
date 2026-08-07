@@ -1,0 +1,45 @@
+rules_version = '2';
+
+// ResolveIQ Firestore security rules.
+// The orchestrator (Cloud Run) uses the Admin SDK which BYPASSES these rules
+// — auth gate for agent-only data is via custom claims at the app level + IAM
+// for the service account. These rules govern direct client reads/writes.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helpers ─────────────────────────────────────────────────
+    function isSignedIn()  { return request.auth != null; }
+    function isAgent()     { return isSignedIn() && request.auth.token.role == 'agent'; }
+
+    // tickets: agents can read all; clients (end users) can only create (channel submission)
+    // and read their own tickets by user_id.
+    match /tickets/{ticketId} {
+      allow read:   if isAgent()
+                    || (isSignedIn() && resource.data.user_id == request.auth.uid);
+      allow create: if true;                                  // public channel ingestion
+      allow update: if false;                                // only via Admin SDK
+      allow delete: if false;
+    }
+
+    // kb_articles: read open (so dashboard can render list for support transparency),
+    // writes only via Admin SDK.
+    match /kb_articles/{articleId} {
+      allow read:   if true;
+      allow write:  if false;
+    }
+
+    // incident_clusters: agent-only (internal ops visibility).
+    match /incident_clusters/{clusterId} {
+      allow read:   if isAgent();
+      allow write:  if false;
+    }
+
+    // feedback: any signed-in user can submit thumbs up/down on their ticket's auto-answer.
+    match /feedback/{feedbackId} {
+      allow read:   if isAgent();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+  }
+}

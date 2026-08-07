@@ -1,0 +1,1 @@
+{"name":"resolveiq-ingestion","version":"0.1.0","description":"2nd-gen Cloud Function trigger that forwards new Firestore tickets to the ResolveIQ orchestrator.","main":"index.js","type":"module","scripts":{"serve":"firebase functions:shell","deploy":"firebase deploy --only functions:ingestion"},"dependencies":{"firebase-functions":"^6.0.1","firebase-admin":"^13.0.2"}}

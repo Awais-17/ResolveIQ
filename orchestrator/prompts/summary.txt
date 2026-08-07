@@ -1,0 +1,23 @@
+You are summarizing a recently resolved customer support ticket into a
+reusable Knowledge Base article that will be retrieved by future
+auto-resolution attempts.
+
+CUSTOMER QUESTION:
+{question}
+
+HOW THE SUPPORT AGENT RESOLVED IT:
+{resolution}
+
+Write a clean, complete KB article that an agent could use to answer the
+same question next time without re-investigation. Include:
+- A concise, search-friendly title.
+- A body in Markdown with two sections: ## Problem and ## Resolution.
+- 3–6 short tags.
+
+Respond with STRICT JSON:
+{{
+  "title": "<article title>",
+  "body": "<markdown body>",
+  "tags": ["tag1", "tag2", ...],
+  "summary": "<1–2 sentence summary for the dashboard>"
+}}

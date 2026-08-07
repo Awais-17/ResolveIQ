@@ -1,0 +1,881 @@
+{
+  "version": "1.0",
+  "diagramId": "1b5f8d0c-1045-4d71-a353-5b3005640811",
+  "title": "Architecture Diagram",
+  "nodes": [
+    {
+      "id": "client-apps",
+      "type": "client",
+      "label": "Customer Channels",
+      "generic_name": "Customer Channels",
+      "ports": [
+        {
+          "id": "out",
+          "label": "Queries",
+          "side": "right"
+        },
+        {
+          "id": "in",
+          "label": "Input",
+          "side": "left"
+        }
+      ],
+      "data": {
+        "generic_name": "Customer Channels",
+        "description": "Multi-channel entry points for customer support queries including Live Chat, Email, and Slack integrations.",
+        "tech": [
+          "Slack API",
+          "SendGrid",
+          "WebSockets"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "api-gateway",
+      "type": "api-gateway",
+      "label": "API Gateway",
+      "generic_name": "API Gateway",
+      "ports": [
+        {
+          "id": "in-client",
+          "label": "Client In",
+          "side": "left"
+        },
+        {
+          "id": "out-orchestrator",
+          "label": "Orchestrator Out",
+          "side": "right"
+        },
+        {
+          "id": "left-2",
+          "label": "Left 2",
+          "side": "left"
+        },
+        {
+          "id": "right-2",
+          "side": "right",
+          "label": "Right 2"
+        }
+      ],
+      "data": {
+        "generic_name": "API Gateway",
+        "description": "FastAPI gateway handling request normalization, authentication, and routing to the AI orchestrator.",
+        "tech": [
+          "FastAPI",
+          "Python",
+          "Google Cloud Run"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "resolve-iq-orchestrator",
+      "type": "service",
+      "label": "ResolveIQ Orchestrator",
+      "generic_name": "AI Agent Orchestrator",
+      "ports": [
+        {
+          "id": "in-api",
+          "label": "API In",
+          "side": "left"
+        },
+        {
+          "id": "out-gemini",
+          "label": "Gemini Out",
+          "side": "right"
+        },
+        {
+          "id": "out-dedup",
+          "label": "Dedup Out",
+          "side": "right"
+        },
+        {
+          "id": "out-sentiment",
+          "label": "Sentiment Out",
+          "side": "right"
+        },
+        {
+          "id": "out-analyst",
+          "label": "Analyst Out",
+          "side": "right"
+        },
+        {
+          "id": "out-kb",
+          "label": "KB Out",
+          "side": "right"
+        },
+        {
+          "id": "out-db",
+          "label": "DB Out",
+          "side": "bottom"
+        },
+        {
+          "id": "out-events",
+          "label": "Events Out",
+          "side": "bottom"
+        },
+        {
+          "id": "left-2",
+          "label": "Left 2",
+          "side": "left"
+        },
+        {
+          "id": "left-3",
+          "label": "Left 3",
+          "side": "left"
+        },
+        {
+          "id": "right-6",
+          "label": "Right 6",
+          "side": "right"
+        },
+        {
+          "id": "right-7",
+          "side": "right",
+          "label": "Right 7"
+        }
+      ],
+      "data": {
+        "description": "Primary support agent managing a 7-node LangGraph StateGraph for ticket resolution.",
+        "tech": [
+          "Python",
+          "LangGraph",
+          "Vertex AI SDK",
+          "Antigravity AI Frameworks"
+        ],
+        "cloud": "google-cloud"
+      }
+    },
+    {
+      "id": "gemini-llm",
+      "type": "service",
+      "label": "Gemini LLM Service",
+      "generic_name": "Gemini LLM",
+      "ports": [
+        {
+          "id": "in-orchestrator",
+          "label": "Orchestrator In",
+          "side": "left"
+        },
+        {
+          "id": "out-orchestrator",
+          "label": "Response Out",
+          "side": "right"
+        }
+      ],
+      "data": {
+        "generic_name": "Gemini LLM",
+        "description": "Gemini 1.5 Pro/Flash models for grounded generation, semantic deduplication, and incident root-cause analysis.",
+        "tech": [
+          "Gemini 1.5 Pro",
+          "Vertex AI",
+          "Google AI Studio"
+        ],
+        "isolated": true
+      }
+    },
+    {
+      "id": "vertex-ai-search",
+      "type": "database",
+      "label": "Vertex AI Search",
+      "generic_name": "Knowledge Base Search",
+      "ports": [
+        {
+          "id": "in-orchestrator",
+          "label": "Orchestrator In",
+          "side": "left"
+        },
+        {
+          "id": "out",
+          "label": "Output",
+          "side": "right"
+        }
+      ],
+      "data": {
+        "generic_name": "Knowledge Base Search",
+        "description": "Vector database storing documentation and self-learned knowledge base articles for RAG retrieval.",
+        "tech": [
+          "Vertex AI Search",
+          "Vector Search",
+          "gemini-embedding-001"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "firestore-db",
+      "type": "database",
+      "label": "Firestore DB",
+      "generic_name": "Primary Database",
+      "ports": [
+        {
+          "id": "in-orchestrator",
+          "label": "Orchestrator In",
+          "side": "left"
+        },
+        {
+          "id": "in-mcp",
+          "label": "MCP In",
+          "side": "top"
+        },
+        {
+          "id": "in-dashboard-sync",
+          "label": "Dashboard Sync In",
+          "side": "right"
+        },
+        {
+          "id": "right-2",
+          "label": "Right 2",
+          "side": "right"
+        },
+        {
+          "id": "left-2",
+          "label": "Left 2",
+          "side": "left"
+        },
+        {
+          "id": "left-3",
+          "side": "left",
+          "label": "Left 3"
+        }
+      ],
+      "data": {
+        "generic_name": "Primary Database",
+        "description": "NoSQL database for ticket state, semantic deduplication ledger, incident clusters, and real-time frontend syncing.",
+        "tech": [
+          "Google Cloud Firestore",
+          "NoSQL"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "changelog-service",
+      "type": "service",
+      "label": "Changelog Service",
+      "generic_name": "Deployment Logs Service",
+      "ports": [
+        {
+          "id": "in-mcp",
+          "label": "MCP In",
+          "side": "top"
+        },
+        {
+          "id": "in-orchestrator",
+          "label": "Orchestrator In",
+          "side": "left"
+        },
+        {
+          "id": "out",
+          "label": "Output",
+          "side": "right"
+        },
+        {
+          "id": "left-2",
+          "side": "left",
+          "label": "Left 2"
+        }
+      ],
+      "data": {
+        "generic_name": "Deployment Logs Service",
+        "description": "Internal service providing access to software deployment logs and changelogs for incident correlation.",
+        "tech": [
+          "Google Cloud Logging",
+          "GitHub API"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "support-dashboard",
+      "type": "frontend",
+      "label": "Support Dashboard",
+      "generic_name": "Support Dashboard",
+      "ports": [
+        {
+          "id": "api-out",
+          "label": "API Calls",
+          "side": "left"
+        },
+        {
+          "id": "db-in",
+          "label": "Live Data",
+          "side": "bottom"
+        },
+        {
+          "id": "out",
+          "label": "Output",
+          "side": "right"
+        },
+        {
+          "id": "right-2",
+          "side": "right",
+          "label": "Right 2"
+        }
+      ],
+      "data": {
+        "generic_name": "Support Dashboard",
+        "description": "React-based dashboard for support agents to manage escalations, view incident alerts, and provide feedback for self-learning.",
+        "tech": [
+          "React",
+          "Vite",
+          "Tailwind CSS",
+          "Firebase SDK"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "event-bus",
+      "type": "message-queue",
+      "label": "Pub/Sub Event Bus",
+      "generic_name": "Event Bus",
+      "ports": [
+        {
+          "id": "in-orchestrator",
+          "label": "Orchestrator In",
+          "side": "left"
+        },
+        {
+          "id": "out-bq",
+          "label": "BigQuery Out",
+          "side": "right"
+        },
+        {
+          "id": "left-2",
+          "label": "Left 2",
+          "side": "left"
+        },
+        {
+          "id": "right-2",
+          "side": "right",
+          "label": "Right 2"
+        }
+      ],
+      "data": {
+        "generic_name": "Event Bus",
+        "description": "Asynchronous event bus for triggering the self-learning loop and incident notifications.",
+        "tech": [
+          "Google Cloud Pub/Sub"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "data-analyst-agent",
+      "type": "service",
+      "label": "Data Analyst Agent",
+      "generic_name": "Data Analyst Agent",
+      "ports": [
+        {
+          "id": "in-orchestrator",
+          "label": "Orchestrator In",
+          "side": "left"
+        },
+        {
+          "id": "out-bq",
+          "label": "BigQuery Out",
+          "side": "right"
+        }
+      ],
+      "data": {
+        "description": "Secondary agent invoked for incident impact reports and data analysis.",
+        "tech": [
+          "Python",
+          "LangGraph",
+          "Vertex AI",
+          "BigQuery SDK"
+        ],
+        "cloud": "google-cloud",
+        "isolated": false
+      }
+    },
+    {
+      "id": "gemma-sentiment-service",
+      "type": "service",
+      "label": "Gemma Sentiment Service",
+      "generic_name": "Sentiment Analysis Service",
+      "ports": [
+        {
+          "id": "in-orchestrator",
+          "label": "Orchestrator In",
+          "side": "left"
+        },
+        {
+          "id": "out-orchestrator",
+          "label": "Sentiment Out",
+          "side": "right"
+        }
+      ],
+      "data": {
+        "description": "Sentiment analysis service using open-weight Gemma models.",
+        "tech": [
+          "Gemma 2b-it",
+          "Vertex AI Model Garden",
+          "Python"
+        ],
+        "cloud": "google-cloud",
+        "isolated": true
+      }
+    },
+    {
+      "id": "google-ai-studio-dedup",
+      "type": "service",
+      "label": "Google AI Studio (Dedup)",
+      "generic_name": "Semantic Deduplication Engine",
+      "ports": [
+        {
+          "id": "in-orchestrator",
+          "label": "Orchestrator In",
+          "side": "left"
+        },
+        {
+          "id": "out-orchestrator",
+          "label": "Dedup Result",
+          "side": "right"
+        }
+      ],
+      "data": {
+        "description": "Explicit routing for semantic deduplication engine.",
+        "tech": [
+          "Google AI Studio",
+          "Gemini 1.5 Flash"
+        ],
+        "cloud": "google-cloud",
+        "isolated": true
+      }
+    },
+    {
+      "id": "bigquery-analytics",
+      "type": "database",
+      "label": "BigQuery Analytics",
+      "generic_name": "Analytics Warehouse",
+      "ports": [
+        {
+          "id": "in-event-bus",
+          "label": "Event Bus In",
+          "side": "left"
+        },
+        {
+          "id": "in-analyst-agent",
+          "label": "Analyst Agent In",
+          "side": "top"
+        },
+        {
+          "id": "out",
+          "label": "Output",
+          "side": "right"
+        },
+        {
+          "id": "left-2",
+          "side": "left",
+          "label": "Left 2"
+        }
+      ],
+      "data": {
+        "description": "Data warehouse for resolved ticket analytics and long-term storage.",
+        "tech": [
+          "Google BigQuery",
+          "SQL"
+        ],
+        "cloud": "google-cloud",
+        "isolated": false
+      }
+    },
+    {
+      "id": "mcp-server-ext",
+      "type": "service",
+      "label": "MCP Extensibility Server",
+      "generic_name": "MCP Extensibility Server",
+      "ports": [
+        {
+          "id": "in-external-llm",
+          "label": "External LLM In",
+          "side": "left"
+        },
+        {
+          "id": "out-firestore",
+          "label": "Firestore Out",
+          "side": "right"
+        },
+        {
+          "id": "out-changelog",
+          "label": "Changelog Out",
+          "side": "bottom"
+        },
+        {
+          "id": "right-2",
+          "side": "right",
+          "label": "Right 2"
+        }
+      ],
+      "data": {
+        "description": "Model Context Protocol server exposing KB and incident data to external LLMs.",
+        "tech": [
+          "FastMCP",
+          "Python",
+          "MCP SDK"
+        ],
+        "cloud": "google-cloud",
+        "isolated": false
+      }
+    },
+    {
+      "id": "external-ai-clients",
+      "type": "client",
+      "label": "External AI Clients",
+      "generic_name": "External AI Clients",
+      "ports": [
+        {
+          "id": "out-mcp",
+          "label": "MCP Out",
+          "side": "right"
+        },
+        {
+          "id": "in",
+          "label": "Input",
+          "side": "left"
+        }
+      ],
+      "data": {
+        "description": "External LLMs or tools consuming ResolveIQ data via MCP.",
+        "tech": [
+          "MCP Client",
+          "Claude Desktop",
+          "Custom LLM Agents"
+        ],
+        "isolated": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "client-to-api",
+      "source": {
+        "nodeId": "client-apps",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "api-gateway",
+        "portId": "in-client"
+      },
+      "type": "http",
+      "label": null
+    },
+    {
+      "id": "api-to-orchestrator",
+      "source": {
+        "nodeId": "api-gateway",
+        "portId": "out-orchestrator"
+      },
+      "target": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "in-api"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "orchestrator-to-gemini",
+      "source": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "out-gemini"
+      },
+      "target": {
+        "nodeId": "gemini-llm",
+        "portId": "in-orchestrator"
+      },
+      "type": "grpc",
+      "label": null
+    },
+    {
+      "id": "orchestrator-to-kb",
+      "source": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "out-dedup"
+      },
+      "target": {
+        "nodeId": "vertex-ai-search",
+        "portId": "in-orchestrator"
+      },
+      "type": "database",
+      "label": null
+    },
+    {
+      "id": "orchestrator-to-db",
+      "source": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "out-sentiment"
+      },
+      "target": {
+        "nodeId": "firestore-db",
+        "portId": "in-orchestrator"
+      },
+      "type": "database",
+      "label": null
+    },
+    {
+      "id": "logs-to-orchestrator",
+      "source": {
+        "nodeId": "changelog-service",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "left-2"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "dashboard-to-gateway",
+      "source": {
+        "nodeId": "support-dashboard",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "api-gateway",
+        "portId": "left-2"
+      },
+      "type": "http",
+      "label": null
+    },
+    {
+      "id": "db-to-dashboard",
+      "source": {
+        "nodeId": "firestore-db",
+        "portId": "in-dashboard-sync"
+      },
+      "target": {
+        "nodeId": "support-dashboard",
+        "portId": "api-out"
+      },
+      "type": "database",
+      "label": null
+    },
+    {
+      "id": "db-to-pubsub",
+      "source": {
+        "nodeId": "firestore-db",
+        "portId": "right-2"
+      },
+      "target": {
+        "nodeId": "event-bus",
+        "portId": "in-orchestrator"
+      },
+      "type": "event-stream",
+      "label": null
+    },
+    {
+      "id": "pubsub-to-orchestrator",
+      "source": {
+        "nodeId": "event-bus",
+        "portId": "out-bq"
+      },
+      "target": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "left-3"
+      },
+      "type": "async-event",
+      "label": null
+    },
+    {
+      "id": "70d439b6-39fa-4bbd-a54d-761080995bb8",
+      "source": {
+        "nodeId": "api-gateway",
+        "portId": "right-2"
+      },
+      "target": {
+        "nodeId": "changelog-service",
+        "portId": "in-orchestrator"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "orchestrator-to-dedup",
+      "source": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "out-analyst"
+      },
+      "target": {
+        "nodeId": "google-ai-studio-dedup",
+        "portId": "in-orchestrator"
+      },
+      "type": "http",
+      "label": null
+    },
+    {
+      "id": "orchestrator-to-sentiment",
+      "source": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "out-kb"
+      },
+      "target": {
+        "nodeId": "gemma-sentiment-service",
+        "portId": "in-orchestrator"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "orchestrator-to-analyst",
+      "source": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "right-6"
+      },
+      "target": {
+        "nodeId": "data-analyst-agent",
+        "portId": "in-orchestrator"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "orchestrator-to-events",
+      "source": {
+        "nodeId": "resolve-iq-orchestrator",
+        "portId": "right-7"
+      },
+      "target": {
+        "nodeId": "event-bus",
+        "portId": "left-2"
+      },
+      "type": "async-event",
+      "label": null
+    },
+    {
+      "id": "event-bus-to-bq",
+      "source": {
+        "nodeId": "event-bus",
+        "portId": "right-2"
+      },
+      "target": {
+        "nodeId": "bigquery-analytics",
+        "portId": "in-event-bus"
+      },
+      "type": "event-stream",
+      "label": null
+    },
+    {
+      "id": "analyst-to-bq",
+      "source": {
+        "nodeId": "data-analyst-agent",
+        "portId": "out-bq"
+      },
+      "target": {
+        "nodeId": "bigquery-analytics",
+        "portId": "left-2"
+      },
+      "type": "database",
+      "label": null
+    },
+    {
+      "id": "external-to-mcp",
+      "source": {
+        "nodeId": "external-ai-clients",
+        "portId": "out-mcp"
+      },
+      "target": {
+        "nodeId": "mcp-server-ext",
+        "portId": "in-external-llm"
+      },
+      "type": "http",
+      "label": null
+    },
+    {
+      "id": "mcp-to-firestore",
+      "source": {
+        "nodeId": "mcp-server-ext",
+        "portId": "out-firestore"
+      },
+      "target": {
+        "nodeId": "firestore-db",
+        "portId": "left-2"
+      },
+      "type": "database",
+      "label": null
+    },
+    {
+      "id": "mcp-to-changelog",
+      "source": {
+        "nodeId": "mcp-server-ext",
+        "portId": "right-2"
+      },
+      "target": {
+        "nodeId": "changelog-service",
+        "portId": "left-2"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "dashboard-to-firestore",
+      "source": {
+        "nodeId": "support-dashboard",
+        "portId": "right-2"
+      },
+      "target": {
+        "nodeId": "firestore-db",
+        "portId": "left-3"
+      },
+      "type": "database",
+      "label": null
+    }
+  ],
+  "groups": [
+    {
+      "children": [
+        "client-apps",
+        "support-dashboard",
+        "external-ai-clients"
+      ],
+      "id": "client-layer-group",
+      "label": "Client & Interface Layer"
+    },
+    {
+      "children": [
+        "api-gateway"
+      ],
+      "id": "gateway-layer-group",
+      "label": "Gateway Layer"
+    },
+    {
+      "children": [
+        "resolve-iq-orchestrator",
+        "data-analyst-agent",
+        "gemma-sentiment-service",
+        "mcp-server-ext"
+      ],
+      "id": "agent-core-group",
+      "label": "AI Agent Core (LangGraph)"
+    },
+    {
+      "children": [
+        "gemini-llm",
+        "google-ai-studio-dedup",
+        "vertex-ai-search"
+      ],
+      "id": "ai-services-group",
+      "label": "Google AI Services"
+    },
+    {
+      "children": [
+        "firestore-db",
+        "bigquery-analytics",
+        "event-bus"
+      ],
+      "id": "data-layer-group",
+      "label": "Data & Analytics Layer"
+    },
+    {
+      "children": [
+        "changelog-service"
+      ],
+      "id": "external-integrations-group",
+      "label": "External Integrations"
+    }
+  ],
+  "metadata": {}
+}

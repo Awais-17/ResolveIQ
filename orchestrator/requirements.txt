@@ -1,0 +1,29 @@
+# ResolveIQ orchestrator dependencies.
+# Pin minor versions for hackathon reproducibility.
+
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+pydantic==2.10.4
+python-dotenv==1.0.1
+
+# ─── Google AI / Vertex AI (unified SDK + LangChain wrappers) ─────
+google-genai>=1.51.0
+langchain-google-genai==3.0.2
+langchain-google-community==2.0.4
+langchain-core==0.3.27
+google-cloud-discoveryengine>=0.13.0
+
+# ─── LangGraph orchestrator (StateGraph + checkpointer + store) ──
+langgraph==1.2.10
+langgraph-checkpoint-firestore==0.1.0
+
+# ─── Firebase Admin (async Firestore writes; bypasses security rules via IAM)
+firebase-admin>=6.7.0
+google-cloud-firestore>=2.20.0
+
+# ─── Utilities ────────────────────────────────────────────────────
+google-cloud-bigquery
+httpx==0.28.1
+tenacity==9.0.0
+structlog==24.4.0
+python-multipart==0.0.19

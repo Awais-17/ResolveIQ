@@ -1,0 +1,1 @@
+{"name":"resolveiq-feedback","version":"0.1.0","description":"2nd-gen Cloud Function that processes thumbs-up/down feedback and tunes confidence thresholds.","main":"index.js","type":"module","scripts":{"serve":"firebase functions:shell","deploy":"firebase deploy --only functions:feedback"},"dependencies":{"firebase-functions":"^6.0.1","firebase-admin":"^13.0.2"}}

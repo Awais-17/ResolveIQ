@@ -1,0 +1,40 @@
+﻿# ─── Env / secrets ───────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+service-account-*.json
+firebase-service-account-*.json
+
+# ─── Python ──────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# ─── Node ────────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+.vite/
+.cache/
+
+# ─── Firebase ────────────────────────────────────────────────────
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# ─── OS / IDE ────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# ─── Data / artifacts ────────────────────────────────────────────
+data/_seeded_*.json

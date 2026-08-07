@@ -1,0 +1,58 @@
+2026-08-06 18:35:26 [info     ] startup                        model=gemini-3.1-pro-preview real_ai=False real_firestore=False real_rag=False stub_mode=True
+2026-08-06 18:35:26 [info     ] startup.graph_compiled
+2026-08-06 18:35:32 [info     ] tickets.ingest                 channel=chat ticket_id=tkt_8523f06b87
+2026-08-06 18:35:32 [info     ] intake.received                channel=chat text_len=71 ticket_id=tkt_8523f06b87 user_id=alice
+2026-08-06 18:35:32 [info     ] retrieve.start                 ticket_id=tkt_8523f06b87 top_k=5
+2026-08-06 18:35:32 [warning  ] retrieve.stub_mode             chunks=1
+2026-08-06 18:35:32 [info     ] generate.start                 chunks=1 ticket_id=tkt_8523f06b87
+2026-08-06 18:35:32 [warning  ] generate.stub_mode             confidence=0.82
+2026-08-06 18:35:32 [info     ] dedup.start                    ticket_id=tkt_8523f06b87
+2026-08-06 18:35:32 [warning  ] dedup.stub_mode                best_sim=0.0 cluster_id=cl_fc342a6fc2 size=1
+2026-08-06 18:35:32 [info     ] auto_resolve.success           cited_chunks=['kb-stub-1'] confidence=0.82 ticket_id=tkt_8523f06b87
+INFO:     127.0.0.1:64280 - "POST /tickets HTTP/1.1" 200 OK
+2026-08-06 18:35:34 [info     ] tickets.ingest                 channel=email ticket_id=tkt_f109b7aa61
+2026-08-06 18:35:34 [info     ] intake.received                channel=email text_len=84 ticket_id=tkt_f109b7aa61 user_id=bob
+2026-08-06 18:35:34 [info     ] retrieve.start                 ticket_id=tkt_f109b7aa61 top_k=5
+2026-08-06 18:35:34 [warning  ] retrieve.stub_mode             chunks=1
+2026-08-06 18:35:34 [info     ] generate.start                 chunks=1 ticket_id=tkt_f109b7aa61
+2026-08-06 18:35:34 [warning  ] generate.stub_mode             confidence=0.82
+2026-08-06 18:35:34 [info     ] dedup.start                    ticket_id=tkt_f109b7aa61
+2026-08-06 18:35:34 [warning  ] dedup.stub_mode                best_sim=0.18181818181818182 cluster_id=cl_fc342a6fc2 size=2
+2026-08-06 18:35:34 [info     ] auto_resolve.success           cited_chunks=['kb-stub-1'] confidence=0.82 ticket_id=tkt_f109b7aa61
+INFO:     127.0.0.1:64282 - "POST /tickets HTTP/1.1" 200 OK
+2026-08-06 18:35:36 [info     ] tickets.ingest                 channel=slack ticket_id=tkt_ebe5235904
+2026-08-06 18:35:36 [info     ] intake.received                channel=slack text_len=76 ticket_id=tkt_ebe5235904 user_id=carol
+2026-08-06 18:35:36 [info     ] retrieve.start                 ticket_id=tkt_ebe5235904 top_k=5
+2026-08-06 18:35:36 [warning  ] retrieve.stub_mode             chunks=1
+2026-08-06 18:35:36 [info     ] generate.start                 chunks=1 ticket_id=tkt_ebe5235904
+2026-08-06 18:35:36 [warning  ] generate.stub_mode             confidence=0.82
+2026-08-06 18:35:36 [info     ] dedup.start                    ticket_id=tkt_ebe5235904
+2026-08-06 18:35:36 [warning  ] dedup.stub_mode                best_sim=0.1111111111111111 cluster_id=cl_fc342a6fc2 size=3
+2026-08-06 18:35:36 [info     ] incident.start                 cluster_size=3 ticket_id=tkt_ebe5235904
+2026-08-06 18:35:36 [warning  ] incident.stub_mode             suspected='Likely related to deploy `release-2026.08.05-r3` (file-upload service switched to new multipart encoder) shipped at 09:42 UTC.'
+2026-08-06 18:35:36 [info     ] auto_resolve.success           cited_chunks=['kb-stub-1'] confidence=0.82 ticket_id=tkt_ebe5235904
+INFO:     127.0.0.1:64286 - "POST /tickets HTTP/1.1" 200 OK
+2026-08-06 18:35:38 [info     ] tickets.ingest                 channel=portal ticket_id=tkt_0eda817927
+2026-08-06 18:35:38 [info     ] intake.received                channel=portal text_len=82 ticket_id=tkt_0eda817927 user_id=dave
+2026-08-06 18:35:38 [info     ] retrieve.start                 ticket_id=tkt_0eda817927 top_k=5
+2026-08-06 18:35:38 [warning  ] retrieve.stub_mode             chunks=1
+2026-08-06 18:35:38 [info     ] generate.start                 chunks=1 ticket_id=tkt_0eda817927
+2026-08-06 18:35:38 [warning  ] generate.stub_mode             confidence=0.82
+2026-08-06 18:35:38 [info     ] dedup.start                    ticket_id=tkt_0eda817927
+2026-08-06 18:35:38 [warning  ] dedup.stub_mode                best_sim=0.0 cluster_id=cl_9df57058da size=1
+2026-08-06 18:35:38 [info     ] auto_resolve.success           cited_chunks=['kb-stub-1'] confidence=0.82 ticket_id=tkt_0eda817927
+INFO:     127.0.0.1:64291 - "POST /tickets HTTP/1.1" 200 OK
+2026-08-06 18:35:41 [info     ] tickets.resolve                agent_id=agent_1 ticket_id=tkt_0eda817927
+2026-08-06 18:35:41 [info     ] kb_update.start                ticket_id=tkt_0eda817927
+2026-08-06 18:35:41 [warning  ] kb_update.stub_mode            title='Resolution: Confirmed: CSV-export row length is capped at 65,535 chars b…'
+INFO:     127.0.0.1:64294 - "POST /tickets/tkt_0eda817927/resolve HTTP/1.1" 200 OK
+2026-08-06 18:35:44 [info     ] tickets.ingest                 channel=chat ticket_id=tkt_969700c6b3
+2026-08-06 18:35:44 [info     ] intake.received                channel=chat text_len=82 ticket_id=tkt_969700c6b3 user_id=erin
+2026-08-06 18:35:44 [info     ] retrieve.start                 ticket_id=tkt_969700c6b3 top_k=5
+2026-08-06 18:35:44 [warning  ] retrieve.stub_mode             chunks=1
+2026-08-06 18:35:44 [info     ] generate.start                 chunks=1 ticket_id=tkt_969700c6b3
+2026-08-06 18:35:44 [warning  ] generate.stub_mode             confidence=0.82
+2026-08-06 18:35:44 [info     ] dedup.start                    ticket_id=tkt_969700c6b3
+2026-08-06 18:35:44 [warning  ] dedup.stub_mode                best_sim=1.0 cluster_id=cl_9df57058da size=2
+2026-08-06 18:35:44 [info     ] auto_resolve.success           cited_chunks=['kb-stub-1'] confidence=0.82 ticket_id=tkt_969700c6b3
+INFO:     127.0.0.1:64296 - "POST /tickets HTTP/1.1" 200 OK

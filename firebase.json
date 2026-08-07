@@ -1,0 +1,17 @@
+{
+  "firestore": { "rules": "firestore.rules", "indexes": "firestore.indexes.json" },
+  "hosting": {
+    "public": "apps/dashboard/dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "destination": "/index.html" }],
+    "cleanUrls": true,
+    "headers": [
+      { "source": "**/*.@(js|css|woff|woff2|ttf|png|jpg|jpeg|gif|svg|ico)", "headers": [{ "key": "Cache-Control", "value": "max-age=31536000, immutable" }] },
+      { "source": "/index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
+    ]
+  },
+  "functions": [
+    { "source": "functions/ingestion", "codebase": "ingestion" },
+    { "source": "functions/feedback", "codebase": "feedback" }
+  ]
+}
