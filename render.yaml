@@ -15,3 +15,10 @@ services:
     env: static
     buildCommand: cd apps/dashboard && npm install && npm run build
     staticPublishPath: apps/dashboard/dist
+
+  - type: web
+    name: resolveiq-customer-portal
+    env: static
+    buildCommand: cd apps/customer-portal && npm install && npm run build
+    staticPublishPath: apps/customer-portal/dist
+
