@@ -3,9 +3,11 @@ services:
     name: resolveiq-orchestrator
     env: python
     plan: free
-    buildCommand: pip install -r orchestrator/requirements.txt
+    buildCommand: pip install --upgrade pip && pip install -r orchestrator/requirements.txt
     startCommand: uvicorn orchestrator.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: PYTHONPATH
+        value: .
       - key: GEMINI_API_KEY
         sync: false
       - key: RESOLVEIQ_USE_STUB
