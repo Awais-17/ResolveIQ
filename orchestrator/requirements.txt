@@ -8,14 +8,14 @@ python-dotenv==1.0.1
 
 # ─── Google AI / Vertex AI (unified SDK + LangChain wrappers) ─────
 google-genai>=1.51.0
-langchain-google-genai==3.0.2
-langchain-google-community==2.0.4
-langchain-core==0.3.27
+langchain-google-genai>=2.0.0
+langchain-google-community>=2.0.0
+langchain-core>=0.3.0
 google-cloud-discoveryengine>=0.13.0
 
 # ─── LangGraph orchestrator (StateGraph + checkpointer + store) ──
-langgraph==1.2.10
-langgraph-checkpoint-firestore==0.1.0
+langgraph>=0.2.0
+langgraph-checkpoint-firestore>=0.1.1
 
 # ─── Firebase Admin (async Firestore writes; bypasses security rules via IAM)
 firebase-admin>=6.7.0
