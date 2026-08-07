@@ -78,6 +78,16 @@ async def _log_requests(request, call_next):
     return response
 
 
+@app.get("/")
+async def root():
+    return {
+        "service": "ResolveIQ Orchestrator API",
+        "status": "online",
+        "health_check": "/healthz",
+        "documentation": "/docs",
+    }
+
+
 @app.get("/healthz", response_model=HealthResponse)
 async def healthz() -> HealthResponse:
     return HealthResponse(
