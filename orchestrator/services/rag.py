@@ -79,7 +79,12 @@ def _search_local(store: list[dict], query: str, top_k: int) -> list[dict]:
         return []
 
     import re
-    stopwords = {"the", "a", "an", "and", "or", "to", "of", "in", "for", "is", "are", "with", "on", "at", "by", "my", "we", "i", "you", "it", "this", "that", "why", "does", "how", "what", "sometimes", "at"}
+    stopwords = {
+        "the", "a", "an", "and", "or", "to", "of", "in", "for", "is", "are", "with",
+        "on", "at", "by", "my", "we", "i", "you", "it", "this", "that", "why", "does",
+        "how", "what", "do", "have", "can", "get", "give", "me", "us", "want", "like",
+        "need", "offer", "sell", "contain", "any", "some"
+    }
     query_tokens = set(re.findall(r"\w+", query.lower())) - stopwords
     if not query_tokens:
         return []
@@ -87,11 +92,11 @@ def _search_local(store: list[dict], query: str, top_k: int) -> list[dict]:
     scored = []
     for doc in store:
         doc_text = f"{doc.get('title', '')} {doc.get('body', '')}".lower()
-        doc_tokens = set(re.findall(r"\w+", doc_text))
+        doc_tokens = set(re.findall(r"\w+", doc_text)) - stopwords
 
         matches = 0
         for qt in query_tokens:
-            if qt in doc_text:
+            if qt in doc_tokens or qt in doc_text:
                 matches += 1
             elif len(qt) > 3 and any(dt.startswith(qt[:4]) or qt.startswith(dt[:4]) for dt in doc_tokens if len(dt) > 3):
                 matches += 1
@@ -100,10 +105,14 @@ def _search_local(store: list[dict], query: str, top_k: int) -> list[dict]:
             title_text = doc.get('title', '').lower()
             title_matches = sum(1 for qt in query_tokens if qt in title_text)
             coverage = matches / len(query_tokens)
-            if title_matches > 0 or coverage >= 0.25:
-                score = min(0.95, max(0.85, round(0.70 + 0.25 * coverage, 2)))
+            
+            if coverage >= 0.75 or (title_matches >= 1 and coverage >= 0.50):
+                score = min(0.95, round(0.70 + 0.25 * coverage, 2))
+            elif coverage >= 0.50:
+                score = round(0.50 + 0.20 * coverage, 2)
             else:
-                score = round(coverage, 2)
+                score = round(coverage * 0.40, 2)
+                
             if score >= 0.25:
                 scored.append(({**doc, "score": score}, score))
 

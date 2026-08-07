@@ -112,7 +112,6 @@ export default function ChannelFeeds() {
               <span className="text-emerald-800 font-bold uppercase tracking-wider">
                 {lastResult.status?.replace(/_/g, " ")}
               </span>
-              )}
             </div>
             {lastResult.suspected_root_cause && (
               <div className="text-crit-400">
