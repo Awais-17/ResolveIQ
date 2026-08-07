@@ -20,6 +20,10 @@ services:
     env: static
     buildCommand: cd apps/dashboard && npm install && npm run build
     staticPublishPath: apps/dashboard/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_ORCHESTRATOR_URL
         value: https://resolveiq-orchestrator.onrender.com
@@ -41,6 +45,10 @@ services:
     env: static
     buildCommand: cd apps/customer-portal && npm install && npm run build
     staticPublishPath: apps/customer-portal/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_ORCHESTRATOR_URL
         value: https://resolveiq-orchestrator.onrender.com
