@@ -47,6 +47,8 @@ class SupportTicketState(TypedDict, total=False):
     timestamp: datetime
     embedding: Optional[list[float]]
     sentiment: Optional[str]
+    is_safe: Optional[bool]
+    security_reason: Optional[str]
 
     # ── Retrieval / generation outputs ─────────────────────────────
     retrieved_chunks: Annotated[list[dict], extend_chunks]

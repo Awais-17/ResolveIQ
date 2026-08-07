@@ -21,9 +21,14 @@ langgraph-checkpoint-firestore==0.1.0
 firebase-admin>=6.7.0
 google-cloud-firestore>=2.20.0
 
+# ─── Testing & Validation ─────────────────────────────────────────
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+
 # ─── Utilities ────────────────────────────────────────────────────
 google-cloud-bigquery
 httpx==0.28.1
+aiohttp
 tenacity==9.0.0
 structlog==24.4.0
 python-multipart==0.0.19
