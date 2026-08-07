@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: resolveiq-orchestrator
+    env: python
+    buildCommand: pip install -r orchestrator/requirements.txt
+    startCommand: uvicorn orchestrator.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: RESOLVEIQ_USE_STUB
+        value: "0"
+
+  - type: web
+    name: resolveiq-dashboard
+    env: static
+    buildCommand: cd apps/dashboard && npm install && npm run build
+    staticPublishPath: apps/dashboard/dist
