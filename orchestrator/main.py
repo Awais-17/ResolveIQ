@@ -7,6 +7,7 @@ Endpoints
 """
 from __future__ import annotations
 
+import asyncio
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -35,6 +36,51 @@ structlog.configure(
 log = structlog.get_logger("resolveiq")
 
 
+async def auto_process_pending_tickets():
+    """Background task: continuously watch Firestore for pending tickets and process them automatically."""
+    log.info("background_worker.started")
+    while True:
+        try:
+            await asyncio.sleep(2)
+            if not _settings.uses_real_firestore:
+                continue
+            from .services.firestore import _get_db
+            try:
+                db = _get_db()
+            except Exception:
+                continue
+
+            snaps = await db.collection("tickets").where("status", "==", "pending").limit(10).get()
+            for doc in snaps:
+                ticket_data = doc.to_dict() or {}
+                ticket_id = doc.id
+                text = ticket_data.get("text", "")
+                if not text:
+                    continue
+                log.info("background_worker.processing_pending", ticket_id=ticket_id, text=text[:30])
+                # Mark status processing to prevent re-pickup
+                await doc.reference.set({"status": "processing"}, merge=True)
+
+                initial_state: SupportTicketState = {
+                    "ticket_id": ticket_id,
+                    "channel": ticket_data.get("channel", "chat"),
+                    "user_id": ticket_data.get("user_id", "u_friend_demo"),
+                    "text": text,
+                    "timestamp": datetime.now(timezone.utc),
+                }
+                try:
+                    graph = get_graph()
+                    await graph.ainvoke(initial_state)
+                    log.info("background_worker.processed_success", ticket_id=ticket_id)
+                except Exception as exc:
+                    log.exception("background_worker.processing_failed", ticket_id=ticket_id, error=str(exc))
+                    await doc.reference.set({"status": "escalated"}, merge=True)
+        except asyncio.CancelledError:
+            break
+        except Exception as err:
+            log.warning("background_worker.error", error=str(err))
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Eagerly compile the graph so the first request is fast.
@@ -49,7 +95,9 @@ async def lifespan(app: FastAPI):
     get_graph()
     get_resolution_graph()
     log.info("startup.graph_compiled")
+    worker_task = asyncio.create_task(auto_process_pending_tickets())
     yield
+    worker_task.cancel()
     log.info("shutdown")
 
 
@@ -174,6 +222,29 @@ async def resolve_ticket(ticket_id: str, body: ResolveRequest) -> ResolveRespons
         status=final_state.get("status", "human_resolved"),
         kb_article_id=final_state.get("kb_article_id"),
     )
+
+
+@app.delete("/kb_articles/{article_id}")
+async def delete_kb_article_endpoint(article_id: str):
+    """Delete a KB article from Firestore and local RAG memory."""
+    log.info("kb_articles.delete_requested", article_id=article_id)
+    
+    # Remove from local in-memory RAG
+    from .services.rag import remove_kb_article
+    await remove_kb_article(article_id=article_id)
+    
+    # Remove from Firestore
+    if _settings.uses_real_firestore:
+        try:
+            from .services.firestore import delete_kb_article
+            success = await delete_kb_article(article_id)
+            if not success:
+                raise HTTPException(status_code=500, detail="Failed to delete from Firestore")
+        except Exception as exc:
+            log.exception("kb_articles.delete_failed", article_id=article_id, error=str(exc))
+            raise HTTPException(status_code=500, detail=f"Delete failed: {exc}") from exc
+            
+    return {"status": "deleted", "article_id": article_id}
 
 
 if __name__ == "__main__":

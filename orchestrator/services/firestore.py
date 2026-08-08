@@ -195,6 +195,15 @@ async def write_kb_article(article, source_ticket_id: str | None) -> str:
     return ref.id
 
 
+async def delete_kb_article(article_id: str) -> bool:
+    """Delete a KB article from Firestore by ID."""
+    db = _get_db()
+    ref = db.collection("kb_articles").document(article_id)
+    await ref.delete()
+    log.info("firestore.kb_article_deleted", kb_article_id=article_id)
+    return True
+
+
 # ─── Incident clusters ─────────────────────────────────────────────
 
 

@@ -88,7 +88,7 @@ export function useEscalations() {
     (ref) =>
       query(
         ref,
-        where("status", "==", "escalated"),
+        where("status", "in", ["escalated", "pending"]),
         limit(50)
       ),
     []

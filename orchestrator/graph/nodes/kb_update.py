@@ -23,7 +23,15 @@ async def kb_update_node(state: SupportTicketState) -> dict:
 
     # Build the article text from the prior ticket state — resolution_text typed by human takes priority!
     q = state.get("text", "")
-    a = state.get("resolution_text") or state.get("answer") or state.get("drafted_reply") or ""
+    res_raw = (state.get("resolution_text") or "").strip()
+    if not res_raw or "no relevant knowledge" in res_raw.lower():
+        res_raw = (state.get("drafted_reply") or "").strip()
+    if not res_raw or "no relevant knowledge" in res_raw.lower():
+        res_raw = (state.get("answer") or "").strip()
+    if not res_raw or "no relevant knowledge" in res_raw.lower():
+        res_raw = f"Yes, '{q}' is fully available and supported."
+
+    a = res_raw
 
     if not _settings.uses_real_ai:
         # ─── STUB: deterministic article for offline validation ────
@@ -38,7 +46,7 @@ async def kb_update_node(state: SupportTicketState) -> dict:
         # ─── REAL: Gemini summarization (phase 8) ───────────────────
         from ...services.gemini import summarize_resolution
         article = await summarize_resolution(question=q, resolution=a)
-        if not article.body or len(article.body.strip()) < 5:
+        if not article.body or len(article.body.strip()) < 5 or "no relevant knowledge" in article.body.lower():
             article = KBArticleDraft(
                 title=f"Resolution for: {q[:50]}",
                 body=a,

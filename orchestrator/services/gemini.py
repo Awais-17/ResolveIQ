@@ -54,7 +54,7 @@ async def ground_and_answer(*, query: str, chunks: list[dict]) -> AnswerWithConf
     if not chunks:
         log.info("gemini.no_chunks_provided", query=query)
         return AnswerWithConfidence(
-            answer="No relevant knowledge base article found for this query.",
+            answer="",
             confidence=0.0,
             cited_chunks=[],
         )

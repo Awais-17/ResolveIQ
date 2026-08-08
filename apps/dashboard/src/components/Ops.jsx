@@ -71,6 +71,26 @@ function ConfidenceBadge({ value }) {
 
 export function KBList() {
   const { items } = useKBArticles();
+  const [deletingId, setDeletingId] = useState(null);
+
+  const deleteArticle = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this article? The AI will immediately forget this knowledge.")) {
+      return;
+    }
+    setDeletingId(id);
+    try {
+      const resp = await fetch(`${ORCHESTRATOR_URL}/kb_articles/${id}`, {
+        method: "DELETE",
+      });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      // Optimistically we rely on Firestore snapshot to remove it
+    } catch (err) {
+      alert("Failed to delete article: " + err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
@@ -89,21 +109,33 @@ export function KBList() {
           <div className="text-slate-400 text-sm">No KB articles indexed yet.</div>
         )}
         {items.map((a) => (
-          <div key={a.id} className="border border-slate-200/60 bg-slate-50/50 rounded-xl p-3.5 text-sm hover:border-slate-300 transition-colors animate-fade-in">
-            <div className="font-semibold text-slate-800 truncate">{a.title}</div>
-            <div className="text-xs text-slate-500 line-clamp-2 mt-1">{a.summary || a.body}</div>
-            <div className="mt-2.5 flex gap-1.5 flex-wrap">
-              {(a.tags || []).map((t) => (
-                <span key={t} className="text-[10px] font-medium px-2 py-0.5 bg-white border border-slate-200 text-slate-600 rounded-md">
-                  {t}
-                </span>
-              ))}
-              {a.source_ticket_id && (
-                <span className="text-[10px] font-bold px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md">
-                  🧠 self-learned
-                </span>
-              )}
+          <div key={a.id} className={`border border-slate-200/60 bg-slate-50/50 rounded-xl p-3.5 text-sm transition-colors animate-fade-in flex justify-between gap-2 ${deletingId === a.id ? 'opacity-50' : 'hover:border-slate-300'}`}>
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold text-slate-800 truncate">{a.title}</div>
+              <div className="text-xs text-slate-500 line-clamp-2 mt-1">{a.summary || a.body}</div>
+              <div className="mt-2.5 flex gap-1.5 flex-wrap">
+                {(a.tags || []).map((t) => (
+                  <span key={t} className="text-[10px] font-medium px-2 py-0.5 bg-white border border-slate-200 text-slate-600 rounded-md">
+                    {t}
+                  </span>
+                ))}
+                {a.source_ticket_id && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md">
+                    🧠 self-learned
+                  </span>
+                )}
+              </div>
             </div>
+            {a.source_ticket_id && (
+              <button 
+                onClick={() => deleteArticle(a.id)}
+                disabled={deletingId === a.id}
+                className="shrink-0 self-start text-slate-400 hover:text-rose-600 p-1 rounded-md hover:bg-rose-50 transition-colors"
+                title="Delete this self-learned article"
+              >
+                {deletingId === a.id ? '⏳' : '🗑️'}
+              </button>
+            )}
           </div>
         ))}
       </div>

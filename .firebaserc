@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "resolveiq-demo"
+  },
+  "targets": {
+    "resolveiq-demo": {
+      "hosting": {
+        "dashboard": [
+          "resolveiq-demo"
+        ],
+        "customer-portal": [
+          "resolveiq-customer-portal"
+        ]
+      }
+    }
+  }
+}

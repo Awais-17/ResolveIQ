@@ -92,6 +92,8 @@ def _search_local(store: list[dict], query: str, top_k: int) -> list[dict]:
     scored = []
     for doc in store:
         doc_text = f"{doc.get('title', '')} {doc.get('body', '')}".lower()
+        if "no relevant knowledge" in doc_text:
+            continue
         doc_tokens = set(re.findall(r"\w+", doc_text)) - stopwords
 
         matches = 0
@@ -144,6 +146,25 @@ async def retrieve_kb(*, query: str, top_k: int | None = None) -> list[dict]:
 
     if not _settings.uses_real_rag:
         # Use local in-memory RAG
+        if _settings.uses_real_firestore:
+            try:
+                from .firestore import _get_db
+                db = _get_db()
+                snaps = await db.collection("kb_articles").get()
+                for snap in snaps:
+                    data = snap.to_dict() or {}
+                    if data.get("title") and data.get("body"):
+                        doc_id = f"fs-{snap.id}"
+                        if not any(d.get("id") == doc_id for d in _LOCAL_KB_STORE):
+                            _LOCAL_KB_STORE.insert(0, {
+                                "id": doc_id,
+                                "title": data["title"],
+                                "body": data["body"],
+                                "score": 0.85,
+                            })
+            except Exception as e:
+                log.warning("rag.firestore_kb_sync_failed", error=str(e))
+                
         results = _search_local(_LOCAL_KB_STORE, query, k)
         log.info("rag.local_kb_retrieved", query=query, found=len(results))
         return results
@@ -205,4 +226,26 @@ async def index_kb_article(*, article_id: str, article) -> None:
             "rag.index_kb_article.managed_push",
             article_id=article_id,
             title=article.title,
+        )
+
+
+async def remove_kb_article(*, article_id: str) -> None:
+    """Remove a KB article from the local in-memory store."""
+    global _LOCAL_KB_STORE
+    
+    # If the article has the fs- prefix from Firestore sync, ensure we match correctly
+    doc_id = f"fs-{article_id}"
+    
+    original_len = len(_LOCAL_KB_STORE)
+    _LOCAL_KB_STORE = [doc for doc in _LOCAL_KB_STORE if doc.get("id") != doc_id and doc.get("id") != article_id]
+    
+    if len(_LOCAL_KB_STORE) < original_len:
+        log.info("rag.remove_kb_article.removed", article_id=article_id)
+    else:
+        log.warning("rag.remove_kb_article.not_found_locally", article_id=article_id)
+        
+    if _settings.uses_real_rag:
+        log.warning(
+            "rag.remove_kb_article.managed_delete_not_implemented",
+            article_id=article_id,
         )
