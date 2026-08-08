@@ -262,7 +262,9 @@ GrandFinale/
 ```
 
 ---
-
+## Live Links
+link for main process:https://resolveiq-demo.web.app/
+link for consumer display:https://resolveiq-customer-portal.web.app/
 ## 📜 License
 
 Built for the **HiDevs AI House Builder Series (Problem Statement #5)** & Google AI Hackathon. All rights reserved.
